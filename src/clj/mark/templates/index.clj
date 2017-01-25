@@ -1,9 +1,16 @@
 (ns mark.templates.index
-  (:require [hiccup.core :refer [html]]
+  (:require [hiccup.page :refer [html5 include-css include-js]]
             [mark.util :refer [ham]]))
 
 (defn index []
-  "<html></html>")
+  (html5
+   {:lang "en"}
+   [:head
+    [:title "Mark Forge"]
+    (include-css "assets/css/ham.css")
+    (include-css "assets/css/style.css")]
+   [:body
+    [:div.wrap "Hello"]]))
 
 
 

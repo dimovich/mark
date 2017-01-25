@@ -10,7 +10,6 @@
                  [weasel "0.7.0" :scope "test"]
                  [org.clojure/tools.nrepl "0.2.12" :scope "test"]
                  [compojure "1.5.2"]
-                 [hiccup "1.0.5"]
                  [perun "0.3.0" :scope "test"]
                  [hiccup "1.0.5"]
                  [prismatic/dommy "1.1.0"]])
