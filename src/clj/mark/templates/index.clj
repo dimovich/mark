@@ -10,7 +10,11 @@
     (include-css "assets/css/ham.css")
     (include-css "assets/css/style.css")]
    [:body
-    [:div.wrap "Hello"]]))
+    [:div.content
+     [:h1.mark
+      "Hello, I am Mark"
+      [:br]
+      "& I am creating stuff."]]]))
 
 
 
