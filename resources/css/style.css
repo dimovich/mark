@@ -1,0 +1,40 @@
+.vinyl {
+    width: 400px;
+    background-color: transparent;
+}
+
+.spin {
+    -webkit-animation:spin 2s linear infinite;
+    -moz-animation:spin 2s linear infinite;
+    animation:spin 2s linear infinite;
+}
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }}
+
+.vinyl-wrap {
+    display: inline-block;
+    background-size: cover;
+    background-image: url('../img/bg.png');
+    position: relative;
+}
+
+
+.vinyl-control {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 4em;
+    height: 4em;
+}
+
+.play {
+    background-image: url('../img/play.png');
+    background-size: cover;
+}
+
+.pause {
+    background-image: url('../img/pause.png');
+    background-size: cover;
+}
