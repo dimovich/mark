@@ -48,7 +48,7 @@
    (cider)
    (serve :dir "target"
           :reload true
-          ;;:httpkit true
+          :httpkit true
           :port 5000)
    (watch)
    (reload)
