@@ -1,29 +1,29 @@
 (ns mark.core
-  (:require [reagent.core :as r]))
-
-(def hz-mult 0.55)
-(def transition (/ (/ 1 hz-mult) 36))
-(def step 10)
-(def direction +)
+  (:require ;;[taoensso.timbre :refer [info]]
+            [dommy.core :as d]
+            [hipo.core :as h]))
 
 
+(defn toggle-play [base el]
+  (let [img (d/sel1 (d/sel1 base :.flex-active-slide) :img)]
+    (d/toggle-class! img :spin)
+    (d/toggle-class! el :play)
+    (d/toggle-class! el :pause)))
 
-(defn index []
-  (let [state (r/atom {:control :play
-                       :angle 0})]
-    (fn []
-      [:div
-       [:div.vinyl-wrap
-        [:img.vinyl
-         {:src "img/vinyl.png"
-          :class (when (= :pause (:control @state))
-                   :spin)}]
-        [:div.vinyl-control {:class (:control @state)
-                             :on-click (fn [_]
-                                         (swap! state update :control #(if (= % :play) :pause :play)))}]]])))
+
+(defn ^:export init []
+  (letfn [(checker []
+            (let [views (d/sel :.flex-viewport)]
+              (if (empty? views)
+                (js/setTimeout checker 1000)
+                (do
+              ;;    (info "views:" views)
+                  (doseq [v views]
+                    (let [el (h/create [:div.vinyl-control.play])]
+                      (d/listen! el :click #(toggle-play v el))
+                      (.appendChild v el)))))))]
+    (checker)))
 
 
 (defn ^:export main []
-  (r/render [index]
-            (.-body js/document)))
-
+  (init))
