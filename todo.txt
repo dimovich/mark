@@ -1,0 +1,6 @@
+- display: hidden for images
+- try positioning now after relative
+- custom js loader
+- pause transition
+- onclick mouse
+- web audio
