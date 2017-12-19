@@ -33,7 +33,6 @@
 @keyframes move-out { 100% { -webkit-transform:translateX(1500px); transform:translateX(1500px); } }
 
 
-
 .vinyl-wrap {
     width: 90vh;
     height: 90vh;

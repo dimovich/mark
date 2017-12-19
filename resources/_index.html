@@ -1,0 +1,22 @@
+<html>
+<head>
+  <title>mark</title>
+  <script type="text/javascript" src="js/main.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="vinyl-wrap"><div id="vinyl" class="vinyl"><img id="vinyl-img" class="vinyl-img spin" src="img/vinyl.svg"></img></div>
+  <div id="vinyl-control" class="vinyl-control pause" onclick="togglePlay()"></div>
+</div>
+</body>
+<script>
+  function togglePlay() {
+  var e = document.getElementById("vinyl-control");
+  e.classList.toggle("pause");
+  e.classList.toggle("play");
+
+    var v = document.getElementById("vinyl-img");
+    v.classList.toggle("spin-pause");
+  }
+</script>
+</html>

@@ -1,0 +1,159 @@
+#main-wrapper {
+    overflow: hidden;
+}
+
+
+h5 {
+	line-height: 130%;
+  	font-family: "Gotham Pro";
+}
+
+h3 {
+  	font-family: "Gotham Pro";
+	font-size: 130%;
+	line-height: 125%;
+}
+
+
+h2 {
+	margin-bottom: 5em;
+	font-family: "Gotham Pro";
+}
+
+h4 {
+	margin-top: 4em !important; 
+	font-family: "Gotham Pro";
+}
+
+p > img {
+	margin-top: 4em !important;
+	width: 85%;
+}
+
+.container {
+	max-width: 960px;
+}
+
+h1 {
+	margin-bottom: 0.4em;
+	font-size: 490%;
+	letter-spacing: -2px;
+	font-family: "Gotham Pro Medium";
+	line-height: 90%;
+}
+
+
+
+.wpb_gallery {
+    margin-top: 2em !important;
+    width: 85%;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.flexslider {
+    border:  none !important;
+    border-radius: 0;
+    box-shadow: none !important;
+}
+
+.slides img {
+    width: 87% !important;
+    margin: 6% 6% !important;
+    max-width: 50vw;
+}
+
+.flex-viewport li {
+}
+
+.flex-active-slide > img {
+    margin-bottom: 0;
+}
+
+.flex-control-nav {
+	margin-top: 2em !important;
+}
+
+.flex-control-paging li a {
+    opacity: 0.3 !important;
+    
+}
+
+.flex-control-nav li {
+    margin: 0 0.6em !important;
+}
+
+.flex-control-paging li a.flex-active {
+	opacity: 1 !important;
+}
+
+.flex-control-paging li a:after {
+    display: none;
+}
+
+
+.spin {
+    -webkit-animation:spin 1.81s linear infinite;
+    -moz-animation:spin 1.81s linear infinite;
+    animation:spin 1.81s linear infinite;
+}
+
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }}
+
+
+
+.vinyl-control {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 4em;
+    height: 4em;
+}
+
+.play, .pause {
+    z-index: 100;
+}
+
+.play {
+    background-image: url('http://www.markforge.com/wp-content/uploads/spinner/play.png');
+    background-size: cover;
+}
+
+.pause {
+    background-image: url('http://www.markforge.com/wp-content/uploads/spinner/pause.png');
+    background-size: cover;
+}
+
+
+.spin-pause {
+    animation-play-state: paused;
+}
+
+.flex-viewport {
+    overflow: visible !important;
+    margin: 0 -50vw !important;
+}
+
+.bg-selectune {
+  	background-image: url('http://www.markforge.com/wp-content/uploads/bg-selectune.svg') !important;
+}
+
+.bg-cosmophony {
+	background-image: url('http://www.markforge.com/wp-content/uploads/bg-selectune.svg');
+}
+
+
+.vinyl-wrapper {
+    margin: 0 50vw;
+    background-color: #0f0f0f;
+    background-size: 20%;
+    background-position: 2em -1em;
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 83vh;
+    height: 83vh;
+    position: relative;
+}
