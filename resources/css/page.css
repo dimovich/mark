@@ -25,10 +25,10 @@ h4 {
 	font-family: "Gotham Pro";
 }
 
-p > img {
+/*p > img {
 	margin-top: 4em !important;
 	width: 85%;
-}
+}*/
 
 .container {
 	max-width: 960px;
@@ -47,6 +47,7 @@ h1 {
 .wpb_gallery {
     margin-top: 2em !important;
     width: 85%;
+    position: relative;
     text-align: center;
     margin: 0 auto;
 }
@@ -58,17 +59,28 @@ h1 {
 }
 
 .slides img {
-    width: 87% !important;
-    margin: 6% 6% !important;
-    max-width: 50vw;
+/*    width: 87% !important;
+    margin: 6% 6% !important;*/
+/*    display: none !important;*/
 }
 
-.flex-viewport li {
+/*.flex-viewport li {
+    padding: 2%;
+}*/
+
+.wpb_gallery_slides ul li {
+    background-color: #0f0f0f;
+    margin: 0 50vw !important;
 }
 
-.flex-active-slide > img {
+.wpb_gallery_slides ul {
+/*    position: relative !important;*/
+}
+
+
+/*.flex-active-slide > img {
     margin-bottom: 0;
-}
+}*/
 
 .flex-control-nav {
 	margin-top: 2em !important;
@@ -132,6 +144,7 @@ h1 {
     animation-play-state: paused;
 }
 
+/*try setting margin during wrapping*/
 .flex-viewport {
     overflow: visible !important;
     margin: 0 -50vw !important;
@@ -156,4 +169,9 @@ h1 {
     width: 83vh;
     height: 83vh;
     position: relative;
+}
+
+
+.display-block {
+    display: block !important;
 }

@@ -49,7 +49,8 @@
                   (doseq [v views]
                     (wrap-divs v)
                     (doseq [div (d/sel v :.vinyl-wrapper)]
-                      (add-listen div)))
+                      (add-listen div)
+                      (d/add-class! (d/sel1 div :img) :display-block)))
                   (doall (map pass-on-bg (d/sel :.wpb_gallery)))))))]
     (checker)))
 
