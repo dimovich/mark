@@ -27,12 +27,14 @@
         spacers (d/sel base :.vinyl-wrapper)]
     (when (empty? spacers)
       (doseq [el els]
-        (let [html (.-innerHTML el)]
-          (set! (.-innerHTML el)
-                (str "<div class=\"vinyl-wrapper\">"
-                     html
-                     "<div class=\"vinyl-control play\"></div>"
-                     "</div>")))))))
+        (let [wrapper (d/create-element :div)
+              control (d/create-element :div)
+              img (d/sel1 el :img)]
+          (d/add-class! wrapper "vinyl-wrapper")
+          (d/add-class! control "vinyl-control" "play")
+          (d/append! wrapper img)
+          (d/append! wrapper control)
+          (d/append! el wrapper))))))
 
 
 (defn add-listen [base]
@@ -41,17 +43,26 @@
 
 
 (defn ^:export init []
-  (letfn [(checker []
+  (letfn [(resizer [fun delay count]
+            (when (pos? count)
+              (js/setTimeout #(do (fun)
+                                  (resizer fun delay (dec count)))
+                             delay)))
+          (checker []
             (let [views (d/sel :.flex-viewport)]
               (if (empty? views)
                 (js/setTimeout checker 1000)
                 (do
-                  (doseq [v views]
-                    (wrap-divs v)
-                    (doseq [div (d/sel v :.vinyl-wrapper)]
-                      (add-listen div)
-                      (d/add-class! (d/sel1 div :img) :display-block)))
-                  (doall (map pass-on-bg (d/sel :.wpb_gallery)))))))]
+                  (doall (map wrap-divs (d/sel :.flex-viewport)))
+                  (doall (map #(do (d/add-class! % :vinyl-spacer)
+                                   (doseq [div (d/sel % :.vinyl-wrapper)]
+                                     (add-listen div)))
+                              (d/sel :.flex-viewport)))
+                  (doall (map pass-on-bg (d/sel :.wpb_gallery)))
+
+                  (let [ev (js/Event. "resize")
+                        fun #(js/dispatchEvent ev)]
+                    (resizer fun 500 3))))))]
     (checker)))
 
 
