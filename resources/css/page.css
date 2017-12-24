@@ -50,6 +50,11 @@ h1 {
     position: relative;
     text-align: center;
     margin: 0 auto;
+    opacity: 0;
+}
+
+.hidden {
+    opacity: 0;
 }
 
 .flexslider {
@@ -127,6 +132,7 @@ h1 {
     bottom: 0;
     width: 4em;
     height: 4em;
+    cursor: pointer;
 }
 
 .play, .pause {
@@ -205,3 +211,9 @@ h1 {
 
 
 
+
+@media screen and (max-width: 700px) {
+    .vinyl-wrapper {
+	max-width: 85vw;
+    }
+}

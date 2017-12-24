@@ -14,15 +14,10 @@
                  [org.clojure/tools.nrepl   "0.2.13"   :scope "test"]
                  [cider/cider-nrepl         "0.15.1"   :scope "test"]
 
-                 ;;[quil "2.6.0"]
                  [prismatic/dommy "1.1.0"]
-                 [hipo "0.5.2"]
-                 
-                 ;;[reagent "0.8.0-alpha2"]
-                 ;; [cljsjs/fabric "1.7.19-1"]
-                 ;;[rm-hull/monet "0.3.0"]
-
-                 [com.taoensso/timbre "4.10.0"]])
+                 ;;[cljs-bach "0.3.0"]
+                 ;;[com.taoensso/timbre "4.10.0"]
+                 ])
 
 
 

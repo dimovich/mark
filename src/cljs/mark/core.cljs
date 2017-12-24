@@ -3,6 +3,45 @@
             [dommy.core :as d]))
 
 
+(defonce state (atom {}))
+
+
+(defn create-context []
+  (if js/AudioContext
+    (js/AudioContext.)
+    (js/webkitAudioContext.)))
+
+
+
+(defn load-mp3 [url]
+  (let [ctx (create-context)
+        source (.createBufferSource ctx)
+        req (js/XMLHttpRequest.)]
+    (.open req "GET" url true)
+    (set! (.-responseType req) "arraybuffer")
+    (set! (.-onload req)
+          (fn []
+            (let [data (.-response req)]
+              (.decodeAudioData
+               ctx data
+               (fn [buffer]
+                 (set! (.-buffer source) buffer)
+                 (set! (.-loop source) true)
+                 (.connect source (.-destination ctx))
+                 (.suspend ctx)
+                 (.start source)
+                 (swap! state assoc
+                        :play #(.resume ctx)
+                        :stop #(.suspend ctx)
+                        :close-audio #(.close ctx)))
+               ;;#(info "Error decoding audio data" (.-err %))
+               ))))
+    (.send req)))
+
+
+
+
+
 (defn toggle-play [base el]
   (let [img (d/sel1 base :img)]
     (if (d/has-class? img :spin)
@@ -10,7 +49,20 @@
       (d/add-class! img :spin))
     
     (d/toggle-class! el :play)
-    (d/toggle-class! el :pause)))
+    (d/toggle-class! el :pause)
+
+    (if (d/has-class? el :play)
+      (when-let [stop (:stop @state)]
+        (do
+          (when (pos? (:play-count @state))
+            (when (zero? (-> (swap! state update :play-count dec)
+                             :play-count))
+              (stop)))))
+      (when-let [play (:play @state)]
+        (do
+          (swap! state update :play-count inc)
+          (play))))))
+
 
 
 (defn pass-on-bg [base]
@@ -43,16 +95,22 @@
 
 
 (defn ^:export init []
-  (letfn [(resizer [fun delay count]
-            (when (pos? count)
+  (letfn [(resizer [fun delay count end-fn]
+            (if (pos? count)
               (js/setTimeout #(do (fun)
-                                  (resizer fun delay (dec count)))
-                             delay)))
+                                  (resizer fun delay (dec count) end-fn))
+                             delay)
+              (do
+                (end-fn)
+                (js/setTimeout fun delay))))
           (checker []
             (let [views (d/sel :.flex-viewport)]
               (if (empty? views)
-                (js/setTimeout checker 1000)
                 (do
+                  (js/setTimeout checker 700))
+                (do
+                  ;;(doall (map #(d/add-class! % :hidden) (d/sel :.wpb_gallery)))
+                  
                   (doall (map wrap-divs (d/sel :.flex-viewport)))
                   (doall (map #(do (d/add-class! % :vinyl-spacer)
                                    (doseq [div (d/sel % :.vinyl-wrapper)]
@@ -61,8 +119,10 @@
                   (doall (map pass-on-bg (d/sel :.wpb_gallery)))
 
                   (let [ev (js/Event. "resize")
-                        fun #(js/dispatchEvent ev)]
-                    (resizer fun 500 3))))))]
+                        fun #(js/dispatchEvent ev)
+                        ender (fn [] (doall (map #(d/set-style! % :opacity 1) (d/sel :.wpb_gallery))))]
+                    (resizer fun 500 3 ender))))))]
+    (load-mp3 "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
     (checker)))
 
 
