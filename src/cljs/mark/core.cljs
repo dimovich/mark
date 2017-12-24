@@ -47,21 +47,21 @@
     (if (d/has-class? img :spin)
       (d/toggle-class! img :spin-pause)
       (d/add-class! img :spin))
-    
-    (d/toggle-class! el :play)
-    (d/toggle-class! el :pause)
 
     (if (d/has-class? el :play)
+      (when-let [play (:play @state)]
+        (do
+          (swap! state update :play-count inc)
+          (play)))
       (when-let [stop (:stop @state)]
         (do
           (when (pos? (:play-count @state))
             (when (zero? (-> (swap! state update :play-count dec)
                              :play-count))
-              (stop)))))
-      (when-let [play (:play @state)]
-        (do
-          (swap! state update :play-count inc)
-          (play))))))
+              (stop))))))
+    
+    (d/toggle-class! el :play)
+    (d/toggle-class! el :pause)))
 
 
 
@@ -107,7 +107,7 @@
             (let [views (d/sel :.flex-viewport)]
               (if (empty? views)
                 (do
-                  (js/setTimeout checker 700))
+                  (js/setTimeout checker 500))
                 (do
                   ;;(doall (map #(d/add-class! % :hidden) (d/sel :.wpb_gallery)))
                   
@@ -121,7 +121,7 @@
                   (let [ev (js/Event. "resize")
                         fun #(js/dispatchEvent ev)
                         ender (fn [] (doall (map #(d/set-style! % :opacity 1) (d/sel :.wpb_gallery))))]
-                    (resizer fun 500 3 ender))))))]
+                    (resizer fun 300 3 ender))))))]
     (load-mp3 "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
     (checker)))
 
