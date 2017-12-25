@@ -1,6 +1,5 @@
 (ns mark.core
-  (:require [dommy.core :as d]
-
+  (:require [dommy.core :as d]))
 
 
 (defonce state (atom {}))
@@ -162,5 +161,6 @@
     (checker 10)))
 
 
+;; yay
 (defn ^:export main []
   (init))
