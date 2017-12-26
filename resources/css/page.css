@@ -3,6 +3,20 @@
 }
 
 
+a::after {
+    width: 100% !important;
+}
+
+.container .page-container {
+    max-width: 860px;
+    margin: auto;
+}
+
+.flex-direction-nav {
+    display: none;
+}
+
+
 h5 {
 	line-height: 130%;
   	font-family: "Gotham Pro";
@@ -30,9 +44,6 @@ h4 {
 	width: 85%;
 }*/
 
-.container {
-	max-width: 960px;
-}
 
 h1 {
 	margin-bottom: 0.4em;
@@ -172,7 +183,7 @@ h1 {
 
 .vinyl-wrapper {
     margin: 0 50vw;
-    max-width: 45vw;
+    max-width: 44vw;
     background-color: #0f0f0f;
     background-size: 20%;
     background-position: 5% -5%;
@@ -187,10 +198,10 @@ h1 {
     background-size: cover;
     background-image: url('http://www.markforge.com/wp-content/uploads/vinyl-shadow.png');
     pointer-events: none;
-    width: 76%;
-    height: 76%;
-    top: 12%;
-    left: 12%;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
 }
 
 
