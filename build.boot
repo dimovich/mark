@@ -14,10 +14,10 @@
                  [org.clojure/tools.nrepl   "0.2.13"   :scope "test"]
                  [cider/cider-nrepl         "0.15.1"   :scope "test"]
 
+                 [cljsjs/element-resize-detector "1.1.12-1"]
+                 
                  [prismatic/dommy "1.1.0"]
-                 ;;[cljs-bach "0.3.0"]
-                 ;;[com.taoensso/timbre "4.10.0"]
-                 ])
+                 [com.taoensso/timbre "4.10.0"]])
 
 
 
