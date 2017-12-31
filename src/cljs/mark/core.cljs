@@ -1,11 +1,10 @@
 (ns mark.core
   (:require [dommy.core :as d]
-            [taoensso.timbre :refer [info]]
+;;            [taoensso.timbre :refer [info]]
             [cljsjs.element-resize-detector]))
 
 
 (def state (atom {}))
-(def wrapper-class :.vinyl-wrapper)
 
 (def resizer (js/elementResizeDetectorMaker
               (clj->js {:strategy :scroll})))
@@ -36,8 +35,8 @@
                (fn [buffer]
                  (set! (.-buffer source) buffer)
                  (set! (.-loop source) true)
-                 (.connect source (.-destination ctx))
                  (.suspend ctx)
+                 (.connect source (.-destination ctx))
                  (.start source)
                  ;; add play/stop/close-audio functions to the state
                  (swap! state assoc
@@ -81,6 +80,9 @@
 
 
 
+(defn get-wrapper [base]
+  (d/sel1 base :.vinyl-wrapper))
+
 
 (defn playing? [base]
   (-> (d/sel1 base :.vinyl-control)
@@ -90,9 +92,9 @@
 
 (defn handle-nav-click [base]
   (let [wrapper (-> (d/sel1 base :.flex-active-slide)
-                    (d/sel1 wrapper-class))]
+                    get-wrapper)]
     (when (playing? wrapper)
-      (info "scheduling play toggle...")
+;;      (info "scheduling play toggle...")
       (js/setTimeout #(toggle-play wrapper) 1000))))
 
 
@@ -105,7 +107,6 @@
 
 (defn add-nav-controls-listen! [base]
   (let [xs (get-nav-controls base)]
-    (info "hello" xs)
     (doseq [el xs]
       (d/listen! el :click  #(handle-nav-click base)))))
 
@@ -129,20 +130,17 @@
 ;; takes a parent element and wraps the contents of <li> items inside
 ;; divs with play control.
 (defn wrap-divs [base]
-  (let [els (d/sel base :li)
-        spacers (d/sel base :.vinyl-wrapper)]
-    
-    ;; check first if we didn't already add the wrappers
-    (when (empty? spacers)
-      (doseq [el els]
-        (let [wrapper (d/create-element :div)
-              control (d/create-element :div)
-              img (d/sel1 el :img)]
-          (d/add-class! wrapper "vinyl-wrapper")
-          (d/add-class! control "vinyl-control" "play")
-          (d/append! wrapper img)
-          (d/append! wrapper control)
-          (d/append! el wrapper))))))
+  (let [els (d/sel base :li)]
+;;    (info "wrapping divs")
+    (doseq [el els]
+      (let [wrapper (d/create-element :div)
+            control (d/create-element :div)
+            img (d/sel1 el :img)]
+        (d/add-class! wrapper "vinyl-wrapper")
+        (d/add-class! control "vinyl-control" "play")
+        (d/append! wrapper img)
+        (d/append! wrapper control)
+        (d/append! el wrapper)))))
 
 
 ;; takes a vinyl-wrapper and adds click events listeners to the play
@@ -153,6 +151,7 @@
 
 
 ;;toggles class for xs when el is resized
+;;todo: schedule a resize after
 (defn toggle-class-on-resize! [class el xs]
   ;;todo: remove listener
   (let [state (atom nil)]
@@ -193,16 +192,32 @@
 
 
 (defn get-viewports []
-  (d/sel :.flew-viewport))
+  (d/sel :.flex-viewport))
 
+
+(defn spind? []
+  (-> (d/sel :.spind)
+      empty?
+      not))
+
+
+(defn add-spind []
+  (d/add-class! (d/sel1 :body) :spind))
 
 
 (defn checker [t]
   (let [views (get-viewports)]
     (if (empty? views)
       (when (pos? t)
+        ;; try again
         (js/setTimeout #(checker (dec t)) 500))
-      (do
+
+      ;; check first if we didn't already add the wrappers
+      (when-not (spind?)
+        ;;        (info "transforming...")
+
+        (load-mp3 "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
+        
         ;; wrap the gallery items inside our div
         (doall (map wrap-divs (get-viewports)))
                     
@@ -211,8 +226,7 @@
                          (doseq [div (d/sel % :.vinyl-wrapper)]
                            (add-listen! div)))
                     (get-viewports)))
-
-        (info "hello")
+        
         
         (doseq [base (d/sel :.wpb_gallery)]
           (pass-on-bg! base)
@@ -222,8 +236,9 @@
         (toggle-class-on-resize!
          :no-transition
          (d/sel1 :body)
-         (d/sel :.flex-viewport))
-                    
+         (get-viewports))
+
+        
         ;; trigger some delayed page resizes so the gallery redraws
         (let [ev (js/Event. "resize")
               f #(js/dispatchEvent ev)
@@ -232,12 +247,13 @@
                       (doall (map #(d/add-class! % :visible)
                                   (d/sel :.wpb_gallery))))]
                       
-          (looper f 300 2 ender))))))
+          (looper f 300 2 ender))
+        
+        (add-spind)))))
 
 
 
 (defn ^:export init []
-  (load-mp3 "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
   (checker 20))
 
 
