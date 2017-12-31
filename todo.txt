@@ -1,1 +1,2 @@
-- pause transition
+- check how bach is doing the web audio pause / start
+- trigger a resize after resizing is finished (loop?)
