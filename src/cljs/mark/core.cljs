@@ -86,10 +86,14 @@
 
 (defn handle-nav-click [base]
   (let [wrapper (-> (d/sel1 base :.flex-active-slide)
-                    get-wrapper)]
-    
-    (when (playing? wrapper)
-      (js/setTimeout #(toggle-play wrapper) 300))))
+                    get-wrapper)
+        img (d/sel1 wrapper :img)]
+
+    (js/setTimeout
+     #(do
+        (when (playing? wrapper) (toggle-play wrapper))
+        (d/remove-class! img :spin :spin-pause))
+     300)))
 
 
 
@@ -213,7 +217,7 @@
 
 
 
-(defn ^:export init []
+(defn init []
   (checker 20))
 
 

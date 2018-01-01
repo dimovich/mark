@@ -1,0 +1,13 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["src/cljs"]
+
+ :dependencies
+ [[prismatic/dommy "1.1.0"]]
+
+ :builds
+ {:prod {:target :browser
+         :output-dir "release"
+         :asset-path "out"
+         :modules {:mark {:entries [mark.core]}}
+         :compiler-options {}}}}

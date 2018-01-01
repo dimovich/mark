@@ -1,0 +1,9 @@
+{
+    "dependencies": {
+        "@cljs-oss/module-deps": "^1.1.1",
+        "shadow-cljs": "^2.0.126"
+    },
+    "devDependencies": {
+        "shadow-cljs": "^2.0.126"
+    }
+}
