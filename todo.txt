@@ -1,2 +1,4 @@
 - check how bach is doing the web audio pause / start
 - trigger a resize after resizing is finished (loop?)
+
+- disable all transition, and enable for 1s when pressing nav

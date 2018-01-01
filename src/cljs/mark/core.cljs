@@ -1,14 +1,8 @@
 (ns mark.core
-  (:require [dommy.core :as d]
-;;            [taoensso.timbre :refer [info]]
-            [cljsjs.element-resize-detector]))
+  (:require [dommy.core :as d]))
 
 
 (def state (atom {}))
-
-(def resizer (js/elementResizeDetectorMaker
-              (clj->js {:strategy :scroll})))
-
 
 (defn create-context []
   (if js/AudioContext
@@ -93,9 +87,9 @@
 (defn handle-nav-click [base]
   (let [wrapper (-> (d/sel1 base :.flex-active-slide)
                     get-wrapper)]
+    
     (when (playing? wrapper)
-;;      (info "scheduling play toggle...")
-      (js/setTimeout #(toggle-play wrapper) 1000))))
+      (js/setTimeout #(toggle-play wrapper) 300))))
 
 
 
@@ -131,7 +125,6 @@
 ;; divs with play control.
 (defn wrap-divs [base]
   (let [els (d/sel base :li)]
-;;    (info "wrapping divs")
     (doseq [el els]
       (let [wrapper (d/create-element :div)
             control (d/create-element :div)
@@ -143,38 +136,12 @@
         (d/append! el wrapper)))))
 
 
+
 ;; takes a vinyl-wrapper and adds click events listeners to the play
 ;; control
-(defn add-listen! [base]
+(defn add-wrapper-listen! [base]
   (let [el (d/sel1 base :.vinyl-control)]
     (d/listen! el :click #(toggle-play base))))
-
-
-;;toggles class for xs when el is resized
-;;todo: schedule a resize after
-(defn toggle-class-on-resize! [class el xs]
-  ;;todo: remove listener
-  (let [state (atom nil)]
-   (.listenTo
-    resizer el
-    (fn [_]
-      (if-not (:resizer @state)
-        (do
-          ;;         (info "starting resize...")
-          (doseq [el xs]
-            (d/toggle-class! el class)))
-        (js/clearTimeout (:resizer @state)))
-
-      ;;     (info "updating resizer...")
-     
-      (swap! state assoc :resizer
-             (js/setTimeout
-              (fn []
-                ;;               (info "ending resize...")
-                (swap! state dissoc :resizer)
-                (doseq [el xs]
-                  (d/toggle-class! el class)))
-              1000))))))
 
 
 
@@ -196,9 +163,7 @@
 
 
 (defn spind? []
-  (-> (d/sel :.spind)
-      empty?
-      not))
+  (-> (d/sel :.spind) empty? not))
 
 
 (defn add-spind []
@@ -208,37 +173,31 @@
 (defn checker [t]
   (let [views (get-viewports)]
     (if (empty? views)
+      ;; retry
       (when (pos? t)
-        ;; try again
         (js/setTimeout #(checker (dec t)) 500))
 
       ;; check first if we didn't already add the wrappers
       (when-not (spind?)
-        ;;        (info "transforming...")
-
         (load-mp3 "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
-        
+
         ;; wrap the gallery items inside our div
         (doall (map wrap-divs (get-viewports)))
                     
-        ;; add spacer margins to gallery and add listen to play button
-        (doall (map #(do (d/add-class! % :vinyl-spacer)
-                         (doseq [div (d/sel % :.vinyl-wrapper)]
-                           (add-listen! div)))
-                    (get-viewports)))
+        ;; add spacer margins to gallery viewport and add listen to
+        ;; play button
+        (doseq [view (get-viewports)]
+          (d/add-class! view :vinyl-spacer)
+          (doseq [wrapper (d/sel view :.vinyl-wrapper)]
+            (add-wrapper-listen! wrapper)))
         
-        
+
+        ;; process the gallery containers
         (doseq [base (d/sel :.wpb_gallery)]
           (pass-on-bg! base)
           (add-nav-controls-listen! base))
         
                     
-        (toggle-class-on-resize!
-         :no-transition
-         (d/sel1 :body)
-         (get-viewports))
-
-        
         ;; trigger some delayed page resizes so the gallery redraws
         (let [ev (js/Event. "resize")
               f #(js/dispatchEvent ev)
@@ -246,9 +205,10 @@
               ender (fn []
                       (doall (map #(d/add-class! % :visible)
                                   (d/sel :.wpb_gallery))))]
-                      
-          (looper f 300 2 ender))
-        
+          
+          (looper f 200 2 ender))
+
+        ;; add a flag so we don't run again
         (add-spind)))))
 
 
