@@ -9,14 +9,13 @@
                  [adzerk/boot-reload        "0.5.2"  :scope "test"]
                  [com.cemerick/piggieback   "0.2.2"  :scope "test"]
                  [weasel                    "0.7.0"  :scope "test"]
-                 [pandeiro/boot-http "0.8.3"   :scope "test"]
+                 [pandeiro/boot-http "0.8.3"         :scope "test"]
 
                  [org.clojure/tools.nrepl   "0.2.13"   :scope "test"]
                  [cider/cider-nrepl         "0.15.1"   :scope "test"]
 
                  [prismatic/dommy "1.1.0"]
-;;                 [com.taoensso/timbre "4.10.0"]
-                 ])
+                 [com.taoensso/timbre "4.10.0"]])
 
 
 

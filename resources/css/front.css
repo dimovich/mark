@@ -1,0 +1,79 @@
+.portfolio-title-vc-content {
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+}
+
+.front-header-container {
+	position: relative;
+	text-align: center;
+	width: 100vw;
+}
+
+.front-header {
+	width:  90%;
+	font-family: Gotham Pro;
+	text-align: center;
+	margin: auto;
+}
+.front-title {
+	font-size: 5.3vw;
+	line-height: 0.85em;
+	letter-spacing: -0.018em;
+	font-family: Gotham Pro Medium;
+	margin-bottom: 0.3em;
+	color: #1a1a1a;
+}
+
+.front-sub-title {
+	font-size: 1.35vw;
+	color: #1a1a1a;
+}
+
+.mobile {
+	display: none;
+}
+
+
+
+@media screen and (max-width: 800px) {
+    .front-sub-title {
+	font-size: 2.35vw;
+    }
+}
+
+
+@media screen and (max-width: 500px) {
+    .portfolio-title-holder {
+	padding-left: 30px !important;
+	padding-right: 30px !important;
+    }
+
+    .section-title h1 {
+	display:none;
+    }
+
+    .main-header {
+	padding-bottom: 2em;
+    }
+    .front-title {
+	font-size: 3.1em;
+	text-align: left !important;
+    }
+
+    .front-sub-title {
+	text-align: left;
+	font-size: 1.2em;
+    }
+    
+    .front-header {
+	text-align: left;
+    }
+
+    .mobile {
+	display: block;
+    }
+
+    .desktop {
+	display: none;
+    }
+}

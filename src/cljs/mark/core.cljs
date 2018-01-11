@@ -1,5 +1,7 @@
 (ns mark.core
-  (:require [dommy.core :as d]))
+  (:require [dommy.core :as d]
+            ;;[taoensso.timbre :refer [info]]
+            ))
 
 
 (def state (atom {}))
@@ -17,7 +19,7 @@
   (let [ctx (create-context)
         source (.createBufferSource ctx)
         req (js/XMLHttpRequest.)]
-    (.open req "GET" url true)
+
     (set! (.-responseType req) "arraybuffer")
     (set! (.-onload req)
           (fn []
@@ -38,6 +40,8 @@
                         :stop #(.suspend ctx)
                         :close-audio #(.close ctx)))
                #_(info "Error decoding audio data" (.-err %))))))
+    
+    (.open req "GET" url true)
     (.send req)))
 
 
@@ -46,60 +50,62 @@
 ;; toggle play/pause
 ;;
 (defn toggle-play [base]
-  (let [el (d/sel1 base :.vinyl-control)
-        img (d/sel1 base :img)]
-    (if (d/has-class? img :spin)
-      (d/toggle-class! img :spin-pause)
-      (d/add-class! img :spin))
+  (when-let [el (d/sel1 base :.vinyl-control)]
+    (when-let [img (d/sel1 base :img)]
+      (if (d/has-class? img :spin)
+        (d/toggle-class! img :spin-pause)
+        (d/add-class! img :spin))
 
-    ;; start the audio and increase the number of players
-    (if (d/has-class? el :play)
-      (when-let [play (:play @state)]
-        (do
-          (swap! state update :play-count inc)
-          (play)))
+      ;; start the audio and increase the number of players
+      (if (d/has-class? el :play)
+        (when-let [play (:play @state)]
+          (do
+            (swap! state update :play-count inc)
+            (play)))
       
-      ;; decrease the number of players and stop the audio if none
-      ;; left
-      (when-let [stop (:stop @state)]
-        (do
-          (when (pos? (:play-count @state))
-            (when (zero? (-> (swap! state update :play-count dec)
-                             :play-count))
-              (stop))))))
+        ;; decrease the number of players and stop the audio if none
+        ;; left
+        (when-let [stop (:stop @state)]
+          (do
+            (when (pos? (:play-count @state))
+              (when (zero? (-> (swap! state update :play-count dec)
+                               :play-count))
+                (stop))))))
 
-    ;; change control element class
-    (d/toggle-class! el :play)
-    (d/toggle-class! el :pause)))
+      ;; change control element class
+      (d/toggle-class! el :play)
+      (d/toggle-class! el :pause))))
 
 
 
 (defn get-wrapper [base]
-  (d/sel1 base :.vinyl-wrapper))
+  (when base
+    (d/sel1 base :.vinyl-wrapper)))
 
 
 (defn playing? [base]
-  (-> (d/sel1 base :.vinyl-control)
-      (d/has-class? :pause)))
+  (when base
+    (-> (d/sel1 base :.vinyl-control)
+        (d/has-class? :pause))))
 
 
 
 (defn handle-nav-click [base]
-  (let [wrapper (-> (d/sel1 base :.flex-active-slide)
-                    get-wrapper)
-        img (d/sel1 wrapper :img)]
-
-    (js/setTimeout
-     #(do
-        (when (playing? wrapper) (toggle-play wrapper))
-        (d/remove-class! img :spin :spin-pause))
-     300)))
+  (when-let [wrapper (-> (d/sel1 base :.flex-active-slide)
+                         get-wrapper)]
+    (when-let [img (d/sel1 wrapper :img)]
+      (js/setTimeout
+       #(do
+          (when (playing? wrapper) (toggle-play wrapper))
+          (d/remove-class! img :spin :spin-pause))
+       300))))
 
 
 
 (defn get-nav-controls [base]
-  (-> (d/sel1 base :.flex-control-nav)
-      (d/sel :li)))
+  (when base
+    (-> (d/sel1 base :.flex-control-nav)
+        (d/sel :li))))
 
 
 
@@ -116,7 +122,7 @@
 ;;
 (defn pass-on-bg! [base]
   (let [els (d/sel base :.vinyl-wrapper)
-        cls (map second (re-seq #"(\bbg[-_][\w]*)" (d/class base)))]
+        cls (map second (re-seq #"(\bbg[-_][\w-_]*)" (d/class base)))]
     (doseq [cl cls]
       (d/remove-class! base cl)
       (doseq [el els]
@@ -128,16 +134,37 @@
 ;; takes a parent element and wraps the contents of <li> items inside
 ;; divs with play control.
 (defn wrap-divs [base]
-  (let [els (d/sel base :li)]
-    (doseq [el els]
+  (let [els (->> (d/sel base :li))
+        els-no-clones (remove #(d/has-class? % :clone) els)
+        els-clones    (filter #(d/has-class? % :clone) els)
+        num (count els-no-clones)
+        [els1 els2] (if (>= num 2)
+                      [(concat (butlast els-no-clones)
+                               (rest els-clones))
+                       (list (last els-no-clones)
+                             (first els-clones))]
+                      [els])]
+    
+
+    ;; normal vinyl-wraps
+    (doseq [el els1]
       (let [wrapper (d/create-element :div)
-            control (d/create-element :div)
-            img (d/sel1 el :img)]
-        (d/add-class! wrapper "vinyl-wrapper")
-        (d/add-class! control "vinyl-control" "play")
-        (d/append! wrapper img)
-        (d/append! wrapper control)
-        (d/append! el wrapper)))))
+            control (d/create-element :div)]
+        (when-let [img (d/sel1 el :img)]
+          (d/add-class! wrapper :vinyl-wrapper)
+          (d/add-class! control :vinyl-control :play)
+          (d/append! wrapper img)
+          (d/append! wrapper control)
+          (d/append! el wrapper))))
+
+    
+    ;; empty vinyl-wraps for the last elements
+    (doseq [el els2]
+      (let [wrapper (d/create-element :div)]
+        (when-let [img (d/sel1 el :img)]
+          (d/add-class! wrapper :vinyl-wrapper-empty)
+          (d/append! wrapper img)
+          (d/append! el wrapper))))))
 
 
 
