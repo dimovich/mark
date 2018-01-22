@@ -122,11 +122,14 @@
 ;;
 (defn pass-on-bg! [base]
   (let [els (d/sel base :.vinyl-wrapper)
+        last-els (d/sel base :.vinyl-wrapper-last)
         cls (map second (re-seq #"(\bbg[-_][\w-_]*)" (d/class base)))]
     (doseq [cl cls]
       (d/remove-class! base cl)
       (doseq [el els]
-        (d/add-class! el cl)))))
+        (d/add-class! el cl))
+      (doseq [el last-els]
+        (d/add-class! el (str cl "-last"))))))
 
 
 
@@ -158,11 +161,11 @@
           (d/append! el wrapper))))
 
     
-    ;; empty vinyl-wraps for the last elements
+    ;; vinyl-wraps for the last elements
     (doseq [el els2]
       (let [wrapper (d/create-element :div)]
         (when-let [img (d/sel1 el :img)]
-          (d/add-class! wrapper :vinyl-wrapper-empty)
+          (d/add-class! wrapper :vinyl-wrapper-last)
           (d/append! wrapper img)
           (d/append! el wrapper))))))
 
@@ -212,6 +215,13 @@
       (when-not (spind?)
         (load-mp3 "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
 
+        #_(-> (get-viewports)
+              (map add-vinyl-wrapper)
+              (map #(d/add-class! % :vinyl-spacer))
+              (map #(map (fn [w] (add-wrapper-listen! w))
+                         (d/sel % :.vinyl-wrapper))))
+        
+        
         ;; wrap the gallery items inside our div
         (doall (map wrap-divs (get-viewports)))
                     
@@ -223,6 +233,12 @@
             (add-wrapper-listen! wrapper)))
         
 
+
+        #_(->> (d/sel :.wpb_gallery)
+               (map (comp add-nav-ctrls-listen
+                          pass-on-bg)))
+
+        
         ;; process the gallery containers
         (doseq [base (d/sel :.wpb_gallery)]
           (pass-on-bg! base)
