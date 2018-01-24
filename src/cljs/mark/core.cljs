@@ -1,5 +1,6 @@
 (ns mark.core
   (:require [dommy.core :as d]
+            [cljsjs.sticky]
             ;;[taoensso.timbre :refer [info]]
             ))
 
@@ -250,8 +251,9 @@
               f #(js/dispatchEvent ev)
               ;; make gallery visible
               ender (fn []
-                      (doall (map #(d/add-class! % :visible)
-                                  (d/sel :.wpb_gallery))))]
+                      (doall
+                       (map #(d/add-class! % :visible)
+                            (d/sel :.wpb_gallery))))]
           
           (looper f 200 2 ender))
 

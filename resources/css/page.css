@@ -1,3 +1,10 @@
+.language-box {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+
 .vinyl-wrapper-last, .vinyl-wrapper {
     margin: 0 30vw;
     max-width: 40vw;
