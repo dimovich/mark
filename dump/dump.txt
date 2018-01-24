@@ -1,11 +1,3 @@
-https://github.com/Prinzhorn/skrollr
-
-paralax all page, and enable when element is in viewport, disable when no element in the viewport
-
-waypoints -> detect when element is in view
-
-Disable for mobile
-
 
 transition : border .2s ease-in;
 transition-delay: 0;
