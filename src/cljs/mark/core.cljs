@@ -1,6 +1,6 @@
 (ns mark.core
   (:require [dommy.core :as d]
-            [cljsjs.sticky]
+            [rellax]
             ;;[taoensso.timbre :refer [info]]
             ))
 
