@@ -1,11 +1,24 @@
 (ns mark.core
-  (:require [dommy.core :as d]
+  (:require [taoensso.timbre :refer [info]]
+            [dommy.core :as d]
             [rellax]
-            ;;[taoensso.timbre :refer [info]]
-            ))
+            [cljsjs.waypoints]))
+
 
 
 (def state (atom {}))
+
+(def Inview js/Waypoint.Inview)
+(def Rellax js/rellax)
+
+
+(defn inview [el opts]
+  (Inview.
+   (-> {:element el}
+       (merge opts)
+       clj->js)))
+
+
 
 (defn create-context []
   (if js/AudioContext
@@ -214,15 +227,10 @@
 
       ;; check first if we didn't already add the wrappers
       (when-not (spind?)
+        (info "adding spind...")
+        
         (load-mp3 "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
 
-        #_(-> (get-viewports)
-              (map add-vinyl-wrapper)
-              (map #(d/add-class! % :vinyl-spacer))
-              (map #(map (fn [w] (add-wrapper-listen! w))
-                         (d/sel % :.vinyl-wrapper))))
-        
-        
         ;; wrap the gallery items inside our div
         (doall (map wrap-divs (get-viewports)))
                     
@@ -230,16 +238,14 @@
         ;; play button
         (doseq [view (get-viewports)]
           (d/add-class! view :vinyl-spacer)
+          ;; add parralax
+          (inview view {:entered #(info "entered") ;;slow down scrolling
+                        :exit #(info "exiting...")})
+          ;; add click listener
           (doseq [wrapper (d/sel view :.vinyl-wrapper)]
             (add-wrapper-listen! wrapper)))
         
 
-
-        #_(->> (d/sel :.wpb_gallery)
-               (map (comp add-nav-ctrls-listen
-                          pass-on-bg)))
-
-        
         ;; process the gallery containers
         (doseq [base (d/sel :.wpb_gallery)]
           (pass-on-bg! base)

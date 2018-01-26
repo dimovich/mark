@@ -12,7 +12,9 @@
                  [pandeiro/boot-http "0.8.3"         :scope "test"]
 
                  [org.clojure/tools.nrepl   "0.2.13"   :scope "test"]
-                 [cider/cider-nrepl         "0.15.1"   :scope "test"]
+                 [cider/cider-nrepl         "0.16.0"   :scope "test"]
+
+                 [cljsjs/waypoints "4.0.0-0"]
 
                  [prismatic/dommy "1.1.0"]
                  [com.taoensso/timbre "4.10.0"]])
@@ -34,6 +36,11 @@
                        :main "mark.core"
                        :install-deps true
                        :npm-deps {:rellax "1.5.0"}
+                       :foreign-libs
+                       [{:file "src/js/inview.js"
+                         :file-min "src/js/inview.min.js"
+                         :provides ["inview"]}]
+                       :externs ["src/js/inview.ext.js"]
                        ;;:pseudo-names true
                        }})
 
