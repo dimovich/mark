@@ -1,23 +1,17 @@
 (ns mark.core
-  (:require [taoensso.timbre :refer [info]]
+  (:require ;;[taoensso.timbre :refer [info]]
             [dommy.core :as d]
-            [rellax]
             [cljsjs.waypoints]))
 
 
 
 (def state (atom {}))
 
-(def Inview js/Waypoint.Inview)
-(def Rellax js/rellax)
-
 
 (defn inview [el opts]
-  (Inview.
-   (-> {:element el}
-       (merge opts)
-       clj->js)))
-
+  (js/Waypoint.Inview.
+   (clj->js (-> {:element el}
+                (merge opts)))))
 
 
 (defn create-context []
@@ -160,7 +154,10 @@
                                (rest els-clones))
                        (list (last els-no-clones)
                              (first els-clones))]
-                      [els])]
+                      [els])
+        gen-inview (fn [el]
+                     (inview el {:entered #(js/jQuery.setScrollSpeed 3)
+                                 :exit #(js/jQuery.setScrollSpeed 25)}))]
     
 
     ;; normal vinyl-wraps
@@ -172,7 +169,8 @@
           (d/add-class! control :vinyl-control :play)
           (d/append! wrapper img)
           (d/append! wrapper control)
-          (d/append! el wrapper))))
+          (d/append! el wrapper)
+          (gen-inview img))))
 
     
     ;; vinyl-wraps for the last elements
@@ -181,7 +179,8 @@
         (when-let [img (d/sel1 el :img)]
           (d/add-class! wrapper :vinyl-wrapper-last)
           (d/append! wrapper img)
-          (d/append! el wrapper))))))
+          (d/append! el wrapper)
+          (gen-inview img))))))
 
 
 
@@ -227,25 +226,23 @@
 
       ;; check first if we didn't already add the wrappers
       (when-not (spind?)
-        (info "adding spind...")
         
         (load-mp3 "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
+        
+        (js/jQuery.initScrollSpeed 25 400)
 
         ;; wrap the gallery items inside our div
         (doall (map wrap-divs (get-viewports)))
-                    
+
+        
         ;; add spacer margins to gallery viewport and add listen to
         ;; play button
         (doseq [view (get-viewports)]
           (d/add-class! view :vinyl-spacer)
-          ;; add parralax
-          (inview view {:entered #(info "entered") ;;slow down scrolling
-                        :exit #(info "exiting...")})
           ;; add click listener
           (doseq [wrapper (d/sel view :.vinyl-wrapper)]
             (add-wrapper-listen! wrapper)))
         
-
         ;; process the gallery containers
         (doseq [base (d/sel :.wpb_gallery)]
           (pass-on-bg! base)

@@ -34,13 +34,7 @@
                        :asset-path "js/out"
                        :parallel-build true
                        :main "mark.core"
-                       :install-deps true
-                       :npm-deps {:rellax "1.5.0"}
-                       :foreign-libs
-                       [{:file "src/js/inview.js"
-                         :file-min "src/js/inview.min.js"
-                         :provides ["inview"]}]
-                       :externs ["src/js/inview.ext.js"]
+                       :externs ["src/js/externs.js"]
                        ;;:pseudo-names true
                        }})
 
