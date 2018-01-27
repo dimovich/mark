@@ -15,6 +15,7 @@
                  [cider/cider-nrepl         "0.16.0"   :scope "test"]
 
                  [cljsjs/waypoints "4.0.0-0"]
+                 [cljsjs/smooth-scroll "10.2.1-0"]
 
                  [prismatic/dommy "1.1.0"]
                  [com.taoensso/timbre "4.10.0"]])

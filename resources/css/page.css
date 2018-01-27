@@ -5,7 +5,7 @@
 }
 
 
-.vinyl-wrapper-last, .vinyl-wrapper {
+.vinyl-wrapper-empty, .vinyl-wrapper-last, .vinyl-wrapper {
     margin: 0 30vw;
     max-width: 40vw;
     background-color: #0f0f0f;
