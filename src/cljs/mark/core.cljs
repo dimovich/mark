@@ -108,13 +108,15 @@
                        (list (last els-no-clones)
                              (first els-clones))]
                       [els])]
-    
+
+    (d/add-class! base :vinyl-spacer)
 
     ;; normal vinyl-wraps
     (doseq [el els1]
       (let [wrapper (d/create-element :div)
             control (d/create-element :div)]
         (when-let [img (d/sel1 el :img)]
+          (d/listen! control :click #(toggle-play wrapper))
           (d/add-class! wrapper :vinyl-wrapper)
           (d/add-class! control :vinyl-control :play)
           (d/append! wrapper img)
@@ -136,7 +138,7 @@
 ;; control
 (defn add-wrapper-listen! [base]
   (let [el (d/sel1 base :.vinyl-control)]
-    (d/listen! el :click #(toggle-play base))))
+    ))
 
 
 
@@ -174,7 +176,7 @@
         ;; add spacer margins to gallery viewport and add listen to
         ;; play button
         (doseq [view (get-viewports)]
-          (d/add-class! view :vinyl-spacer)
+          
           ;; add click listener
           (doseq [wrapper (d/sel view :.vinyl-wrapper)]
             (add-wrapper-listen! wrapper)))
@@ -185,10 +187,11 @@
            base
            {:entered #(when (and (= :mousewheel (:last-scroll @state))
                                  (not= base (:last-scroll-el @state)))
-                        (u/jump-to base)
-                        (swap! state assoc
-                               :last-scroll nil
-                               :last-scroll-el base))})
+                        (u/jump-to base
+                                   (fn []
+                                     (swap! state assoc
+                                            :last-scroll nil
+                                            :last-scroll-el base))))})
           (pass-on-bg! base)
           (add-nav-controls-listen! base))
         

@@ -8,19 +8,24 @@
 (defn init-scroll [{:keys [onscroll]}]
   (let [body (d/sel1 :body)]
     (.init js/smoothScroll
-           (clj->js {:speed 500 :easing "easeInCubic"}))
+           (clj->js {:speed 300 :easing "easeInCubic"}))
     (d/listen! body
-               "mousewheel" #(onscroll :mousewheel)
+               "mousewheel"     #(onscroll :mousewheel)
                "DOMMouseScroll" #(onscroll :mousewheel)
-               "scroll"     #(onscroll :scrollbar))))
+               "scroll"         #(onscroll :scrollbar))))
 
 
 
-(defn jump-to [el]
+(defn jump-to [el ender]
   (let [fun #(.preventDefault %)
         body (d/sel1 :body)]
-    (d/listen! body "mousewheel" fun)
-    (js/setTimeout #(d/unlisten! body "mousewheel" fun) 1500)
+    (d/listen! body
+               "mousewheel" fun
+               "DOMMouseScroll" fun)
+    (js/setTimeout #(do (ender)
+                        (d/unlisten! body
+                                     "mousewheel" fun
+                                     "DOMMouseScroll" fun)) 1500)
     (js/setTimeout
      #(let [brect (d/bounding-client-rect body)
             erect (d/bounding-client-rect el)]
@@ -31,7 +36,7 @@
                  (/ (- (.-innerHeight js/window)
                        (:height erect))
                     -2))))))
-     500)))
+     100)))
 
 
 
