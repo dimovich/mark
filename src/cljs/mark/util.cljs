@@ -7,35 +7,41 @@
 
 
 
-(defn click-language [state el lang]
+(defn click-language [state lang]
   ;; show selected language
   (doseq [el (d/sel lang)]
-    (d/show! el))
+    (d/remove-class! el :hidden))
 
   ;; hide other languages
   (doseq [lang (->> (:languages @state)
                     (remove #{lang}))]
     (doseq [el (d/sel lang)]
-      (d/hide! el))))
+      (d/add-class! el :hidden))))
 
 
 
 (defn init-languages [state]
-  (swap! state assoc :languages
-         (doall
-          (map (fn [el]
-                 (let [lang (d/attr el :alt)]
-                   (d/listen! el :click #(click-language state el lang))
-                   lang))
-               (some-> (d/sel1 :.languages)
-                       (d/sel :a))))))
+  (swap!
+   state assoc :languages
+   (doall
+    (map (fn [el]
+           (let [lang (keyword
+                       (->> (d/attr el :href)
+                            (re-find #"([.][\w-_]*)$")
+                            second))]
+             (d/listen! el :click
+                        #(do (click-language state lang)
+                             (.preventDefault %)))
+             lang))
+         (some-> (d/sel1 :.languages)
+                 (d/sel :a))))))
 
 
 
 (defn init-scroll [{:keys [onscroll]}]
   (let [body (d/sel1 :body)]
     (.init js/smoothScroll
-           (clj->js {:speed 200
+           (clj->js {:speed 300
                      :custom-easing (ease :back-in-out)}))
     (d/listen! body
                "mousewheel"     #(onscroll :mousewheel)
@@ -53,7 +59,7 @@
     (js/setTimeout #(do (ender)
                         (d/unlisten! body
                                      "mousewheel" fun
-                                     "DOMMouseScroll" fun)) 1200)
+                                     "DOMMouseScroll" fun)) 450)
     (js/setTimeout
      #(let [brect (d/bounding-client-rect body)
             erect (d/bounding-client-rect el)]
