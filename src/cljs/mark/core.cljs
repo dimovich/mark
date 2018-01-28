@@ -4,6 +4,7 @@
    [mark.util  :as u]))
 
 
+
 (def state (atom {}))
 
 
@@ -134,17 +135,8 @@
 
 
 
-;; takes a vinyl-wrapper and adds click events listeners to the play
-;; control
-(defn add-wrapper-listen! [base]
-  (let [el (d/sel1 base :.vinyl-control)]
-    ))
-
-
-
 (defn get-viewports []
   (d/sel :.flex-viewport))
-
 
 
 (defn spind? []
@@ -168,19 +160,11 @@
         (u/load-mp3 state "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
         
         (u/init-scroll {:onscroll #(swap! state assoc :last-scroll %)})
+        (u/init-languages state)
 
         ;; wrap the gallery items inside our div
         (doall (map wrap-divs (get-viewports)))
 
-        
-        ;; add spacer margins to gallery viewport and add listen to
-        ;; play button
-        (doseq [view (get-viewports)]
-          
-          ;; add click listener
-          (doseq [wrapper (d/sel view :.vinyl-wrapper)]
-            (add-wrapper-listen! wrapper)))
-        
         ;; process the gallery containers
         (doseq [base (d/sel :.wpb_gallery)]
           (u/in-view

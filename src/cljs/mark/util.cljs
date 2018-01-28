@@ -1,14 +1,42 @@
 (ns mark.util
-  (:require [dommy.core :as d]
+  (:require ;;[taoensso.timbre :refer [info]]
+            [dommy.core :as d]
+            [bardo.ease :refer [ease]]
             [cljsjs.waypoints]
             [cljsjs.smooth-scroll]))
+
+
+
+(defn click-language [state el lang]
+  ;; show selected language
+  (doseq [el (d/sel lang)]
+    (d/show! el))
+
+  ;; hide other languages
+  (doseq [lang (->> (:languages @state)
+                    (remove #{lang}))]
+    (doseq [el (d/sel lang)]
+      (d/hide! el))))
+
+
+
+(defn init-languages [state]
+  (swap! state assoc :languages
+         (doall
+          (map (fn [el]
+                 (let [lang (d/attr el :alt)]
+                   (d/listen! el :click #(click-language state el lang))
+                   lang))
+               (some-> (d/sel1 :.languages)
+                       (d/sel :a))))))
 
 
 
 (defn init-scroll [{:keys [onscroll]}]
   (let [body (d/sel1 :body)]
     (.init js/smoothScroll
-           (clj->js {:speed 300 :easing "easeInCubic"}))
+           (clj->js {:speed 200
+                     :custom-easing (ease :back-in-out)}))
     (d/listen! body
                "mousewheel"     #(onscroll :mousewheel)
                "DOMMouseScroll" #(onscroll :mousewheel)
@@ -25,7 +53,7 @@
     (js/setTimeout #(do (ender)
                         (d/unlisten! body
                                      "mousewheel" fun
-                                     "DOMMouseScroll" fun)) 1500)
+                                     "DOMMouseScroll" fun)) 1200)
     (js/setTimeout
      #(let [brect (d/bounding-client-rect body)
             erect (d/bounding-client-rect el)]
@@ -36,7 +64,7 @@
                  (/ (- (.-innerHeight js/window)
                        (:height erect))
                     -2))))))
-     100)))
+     150)))
 
 
 
@@ -57,9 +85,6 @@
                    delay)
     (do (end-fn)
         (js/setTimeout f delay))))
-
-
-
 
 
 

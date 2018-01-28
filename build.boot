@@ -16,6 +16,7 @@
 
                  [cljsjs/waypoints "4.0.0-0"]
                  [cljsjs/smooth-scroll "10.2.1-0"]
+                 [bardo "0.1.2-SNAPSHOT"]
 
                  [prismatic/dommy "1.1.0"]
                  [com.taoensso/timbre "4.10.0"]])
