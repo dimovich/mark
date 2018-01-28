@@ -1,13 +1,13 @@
+- disable sticky on mobile
+- fix scroll stick after mouse scroll
+- add arrow pointer
+- fix css opacity on iOS
+
+
 - check how bach is doing the web audio pause / start
 - trigger a resize after resizing is finished (loop?)
-
-- disable all transition, and enable for 1s when pressing nav
 
 
 http://www.punkchip.com/css-opacity-not-working-in-ios/
 
 
-https://github.com/Prinzhorn/skrollr
-paralax all page, and enable when element is in viewport, disable when no element in the viewport
-waypoints -> detect when element is in view
-Disable for mobile
