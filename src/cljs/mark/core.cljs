@@ -169,13 +169,15 @@
         (doseq [base (d/sel :.wpb_gallery)]
           (u/in-view
            base
-           {:entered #(when (and (= :mousewheel (:last-scroll @state))
-                                 (not= base (:last-scroll-el @state)))
-                        (u/jump-to base
-                                   (fn []
-                                     (swap! state assoc
-                                            :last-scroll nil
-                                            :last-scroll-el base))))})
+           {:entered (fn [direction]
+                       (when (and (= direction "down")
+                                  (= :mousewheel (:last-scroll @state))
+                                  (not= base (:last-scroll-el @state)))
+                         (u/jump-to base
+                                    (fn []
+                                      (swap! state assoc
+                                             :last-scroll nil
+                                             :last-scroll-el base)))))})
           (pass-on-bg! base)
           (add-nav-controls-listen! base))
         

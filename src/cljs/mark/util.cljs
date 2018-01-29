@@ -6,7 +6,7 @@
             [cljsjs.smooth-scroll]))
 
 
-
+;; TODO: try with set-style! :display "initial !important"
 (defn click-language [state lang]
   ;; show selected language
   (doseq [el (d/sel lang)]
