@@ -6,7 +6,11 @@
             [cljsjs.smooth-scroll]))
 
 
-;; TODO: try with set-style! :display "initial !important"
+(def STICKY_ACTION   150)
+(def STICKY_RELEASE  500)
+(def STICKY_DURATION 300)
+
+
 (defn click-language [state lang]
   ;; show selected language
   (doseq [el (d/sel lang)]
@@ -23,43 +27,47 @@
 (defn init-languages [state]
   (swap!
    state assoc :languages
-   (doall
-    (map (fn [el]
-           (let [lang (keyword
-                       (->> (d/attr el :href)
-                            (re-find #"([.][\w-_]*)$")
-                            second))]
+   (->> (some-> (d/sel1 :.languages)
+                (d/sel :a))
+        (map
+         (fn [el]
+           (let [lang (->> (d/attr el :href)
+                           (re-find #"([.][\w-_]*)$")
+                           second)]
              (d/listen! el :click
                         #(do (click-language state lang)
                              (.preventDefault %)))
-             lang))
-         (some-> (d/sel1 :.languages)
-                 (d/sel :a))))))
+             lang)))
+        
+        doall)))
 
 
 
-(defn init-scroll [{:keys [onscroll]}]
+(defn init-scroll [{:keys [lastscroll]}]
   (let [body (d/sel1 :body)]
     (.init js/smoothScroll
-           (clj->js {:speed 300
+           (clj->js {:speed STICKY_DURATION
                      :custom-easing (ease :back-in-out)}))
+
+    ;; keep track of how we scrolled
     (d/listen! body
-               "mousewheel"     #(onscroll :mousewheel)
-               "DOMMouseScroll" #(onscroll :mousewheel)
-               "scroll"         #(onscroll :scrollbar))))
+               "mousewheel"     #(lastscroll :mousewheel)
+               "DOMMouseScroll" #(lastscroll :mousewheel)
+               "scroll"         #(lastscroll :dontcare)
+               "mousemove"      #(lastscroll :dontcare))))
 
 
 
-(defn jump-to [el ender]
+(defn jump-to [el & [ender]]
   (let [fun #(.preventDefault %)
         body (d/sel1 :body)]
+
+    ;; prevent user from scrolling with mousewheel during sticky-time
     (d/listen! body
                "mousewheel" fun
                "DOMMouseScroll" fun)
-    (js/setTimeout #(do (ender)
-                        (d/unlisten! body
-                                     "mousewheel" fun
-                                     "DOMMouseScroll" fun)) 450)
+
+    ;; schedule the sticky action
     (js/setTimeout
      #(let [brect (d/bounding-client-rect body)
             erect (d/bounding-client-rect el)]
@@ -70,12 +78,19 @@
                  (/ (- (.-innerHeight js/window)
                        (:height erect))
                     -2))))))
-     150)))
+     STICKY_ACTION)
 
+    ;; schedule the post sticky action
+    (js/setTimeout
+     #(do (when ender (ender))
+          (d/unlisten! body
+                       "mousewheel" fun
+                       "DOMMouseScroll" fun))
+     STICKY_RELEASE)))
 
 
 (defn in-view [el opts]
-  (js/Waypoint.Inview.
+  (js/Waypoint.
    (clj->js (-> {:element el}
                 (merge opts)))))
 

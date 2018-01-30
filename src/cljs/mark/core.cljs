@@ -1,15 +1,13 @@
 (ns mark.core
   (:require ;;[taoensso.timbre :refer [info]]
-   [dommy.core :as d]
-   [mark.util  :as u]))
-
+            [dommy.core :as d]
+            [mark.util  :as u]))
 
 
 (def state (atom {}))
 
 
-;; take the vinyl-wrapper element and the play control element and
-;; toggle play/pause
+;; take a vinyl wrapper and toggle play/pause
 ;;
 (defn toggle-play [base]
   (when-let [el (d/sel1 base :.vinyl-control)]
@@ -52,6 +50,8 @@
 
 
 
+;; when changing current image make sure we stop the current spinning
+;; vinyl after some delay
 (defn handle-nav-click [base]
   (when-let [wrapper (-> (d/sel1 base :.flex-active-slide)
                          get-wrapper)]
@@ -139,6 +139,10 @@
   (d/sel :.flex-viewport))
 
 
+(defn get-galleries []
+  (d/sel :.wpb_gallery))
+
+
 (defn spind? []
   (-> (d/sel :.spind) empty? not))
 
@@ -147,6 +151,8 @@
   (d/add-class! (d/sel1 :body) :spind))
 
 
+;; check if slider viewports have loaded and add extra functionality
+;;
 (defn checker [t]
   (let [views (get-viewports)]
     (if (empty? views)
@@ -156,40 +162,44 @@
 
       ;; check first if we didn't already add the wrappers
       (when-not (spind?)
-        
+        ;; load the vinyl noise mp3
         (u/load-mp3 state "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
-        
-        (u/init-scroll {:onscroll #(swap! state assoc :last-scroll %)})
+
+        ;; keep track how we scrolled (mousewheel or other ways)
+        (u/init-scroll {:lastscroll #(swap! state assoc :lastscroll %)})
+
+        ;; extract languages from page
         (u/init-languages state)
 
-        ;; wrap the gallery items inside our div
+        ;; put gallery images inside vinyl wrappers
         (doall (map wrap-divs (get-viewports)))
 
-        ;; process the gallery containers
-        (doseq [base (d/sel :.wpb_gallery)]
+        ;; process gallery containers
+        (doseq [gallery (get-galleries)]
+          ;; keep track when gallery is in view and center it
           (u/in-view
-           base
-           {:entered (fn [direction]
-                       (when (and (= direction "down")
-                                  (= :mousewheel (:last-scroll @state))
-                                  (not= base (:last-scroll-el @state)))
-                         (u/jump-to base
-                                    (fn []
-                                      (swap! state assoc
-                                             :last-scroll nil
-                                             :last-scroll-el base)))))})
-          (pass-on-bg! base)
-          (add-nav-controls-listen! base))
+           gallery
+           {:offset "15%"
+            :handler (fn [direction]
+                       (when (and (= (:lastscroll @state) :mousewheel)
+                                  (not= (:lastscroll-el @state) gallery))
+                         (swap! state dissoc :lastscroll-el)
+                         (when (= direction "down")
+                           (u/jump-to gallery #(swap! state assoc
+                                                      :lastscroll :dontcare
+                                                      :lastscroll-el gallery)))))})
+          ;; take bg-* class name and pass to vinyl wrappers
+          (pass-on-bg! gallery)
+          ;; modify nav menu
+          (add-nav-controls-listen! gallery))
         
                     
         ;; trigger some delayed page resizes so the gallery redraws
         (let [ev (js/Event. "resize")
               f #(js/dispatchEvent ev)
               ;; make gallery visible
-              ender (fn []
-                      (doall
-                       (map #(d/add-class! % :visible)
-                            (d/sel :.wpb_gallery))))]
+              ender #(doseq [el (get-galleries)]
+                       (d/add-class! el :visible))]
           
           (u/looper f 200 2 ender))
 
@@ -199,7 +209,7 @@
 
 
 (defn init []
-  (checker 20))
+  (checker 25))
 
 
 ;; yay
