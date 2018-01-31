@@ -177,8 +177,8 @@
         ;; process gallery containers
         (doseq [gallery (get-galleries)]
           ;; keep track when gallery is almost in view and center it
-          (u/keep-centered state gallery "15%")
-          ;; take bg-* class name and pass to vinyl wrappers
+          (u/keep-centered state gallery "20%")
+          ;; take bg-* class name and pass it down to vinyl wrappers
           (pass-on-bg! gallery)
           ;; modify nav menu
           (add-nav-controls-listen! gallery))
