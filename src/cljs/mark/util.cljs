@@ -26,11 +26,11 @@
 
 
 
-(defn trigger-redraw
+(defn trigger-resize
   ([times]
-   (trigger-redraw times 200 identity))
+   (trigger-resize times 200 identity))
   ([times delay]
-   (trigger-redraw times delay identity))
+   (trigger-resize times delay identity))
   ([times delay ender]
    (let [ev (js/Event. "resize")
          f #(js/dispatchEvent ev)]
@@ -64,7 +64,7 @@
                            second)]
              (d/listen! el :click
                         #(do (click-language state lang)
-                             (trigger-redraw 1)
+                             (trigger-resize 1)
                              (.preventDefault %)))
              lang)))
         

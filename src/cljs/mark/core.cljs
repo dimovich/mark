@@ -183,12 +183,11 @@
           ;; modify nav menu
           (add-nav-controls-listen! gallery))
 
-        
         ;; trigger some delayed page resizes so the gallery redraws
         ;; and make gallery visible
         (let [ender #(doseq [el (get-galleries)]
                        (d/add-class! el :visible))]
-          (u/trigger-redraw 2 ender))
+          (u/trigger-resize 2 200 ender))
 
         ;; add a flag so we don't run again
         (add-spind)))))
