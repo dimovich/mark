@@ -176,32 +176,19 @@
 
         ;; process gallery containers
         (doseq [gallery (get-galleries)]
-          ;; keep track when gallery is in view and center it
-          (u/in-view
-           gallery
-           {:offset "15%"
-            :handler (fn [direction]
-                       (when (and (= (:lastscroll @state) :mousewheel)
-                                  (not= (:lastscroll-el @state) gallery))
-                         (swap! state dissoc :lastscroll-el)
-                         (when (= direction "down")
-                           (u/jump-to gallery #(swap! state assoc
-                                                      :lastscroll :dontcare
-                                                      :lastscroll-el gallery)))))})
+          ;; keep track when gallery is almost in view and center it
+          (u/keep-centered state gallery "15%")
           ;; take bg-* class name and pass to vinyl wrappers
           (pass-on-bg! gallery)
           ;; modify nav menu
           (add-nav-controls-listen! gallery))
+
         
-                    
         ;; trigger some delayed page resizes so the gallery redraws
-        (let [ev (js/Event. "resize")
-              f #(js/dispatchEvent ev)
-              ;; make gallery visible
-              ender #(doseq [el (get-galleries)]
+        ;; and make gallery visible
+        (let [ender #(doseq [el (get-galleries)]
                        (d/add-class! el :visible))]
-          
-          (u/looper f 200 2 ender))
+          (u/trigger-redraw 2 ender))
 
         ;; add a flag so we don't run again
         (add-spind)))))

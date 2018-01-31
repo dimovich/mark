@@ -11,6 +11,34 @@
 (def STICKY_DURATION 300)
 
 
+
+;; execute f after a delay for a number of times, and run a function
+;; at the end (plus another delayed f). used for triggering
+;; page redraw
+(defn looper [f count delay ender]
+  (if (pos? count)
+    (js/setTimeout
+     #(do (f) (looper f (dec count) delay ender))
+     delay)
+    
+    (do (ender)
+        (js/setTimeout f delay))))
+
+
+
+(defn trigger-redraw
+  ([times]
+   (trigger-redraw times 200 identity))
+  ([times delay]
+   (trigger-redraw times delay identity))
+  ([times delay ender]
+   (let [ev (js/Event. "resize")
+         f #(js/dispatchEvent ev)]
+     (looper f times delay ender))))
+
+
+
+
 (defn click-language [state lang]
   ;; show selected language
   (doseq [el (d/sel lang)]
@@ -36,6 +64,7 @@
                            second)]
              (d/listen! el :click
                         #(do (click-language state lang)
+                             (trigger-redraw 1)
                              (.preventDefault %)))
              lang)))
         
@@ -95,17 +124,18 @@
                 (merge opts)))))
 
 
-
-;; execute f after a delay for a number of times, and run a function
-;; at the end (plus another delayed f). used for triggering
-;; page redraw
-(defn looper [f delay count end-fn]
-  (if (pos? count)
-    (js/setTimeout #(do (f)
-                        (looper f delay (dec count) end-fn))
-                   delay)
-    (do (end-fn)
-        (js/setTimeout f delay))))
+(defn keep-centered [state el offset]
+  (in-view
+   el
+   {:offset offset
+    :handler (fn [direction]
+               (when (and (= (:lastscroll @state) :mousewheel)
+                          (not= (:lastscroll-el @state) el))
+                 (swap! state dissoc :lastscroll-el)
+                 (when (= direction "down")
+                   (jump-to el #(swap! state assoc
+                                       :lastscroll :dontcare
+                                       :lastscroll-el el)))))}))
 
 
 
