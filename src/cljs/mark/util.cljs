@@ -7,7 +7,7 @@
 
 
 (def STICKY_ACTION   150)
-(def STICKY_RELEASE  500)
+(def STICKY_RELEASE  600)
 (def STICKY_DURATION 300)
 
 
@@ -62,6 +62,7 @@
            (let [lang (->> (d/attr el :href)
                            (re-find #"([.][\w-_]*)$")
                            second)]
+             (d/remove-attr! el :href)
              (d/listen! el :click
                         #(do (click-language state lang)
                              (trigger-resize 1)
