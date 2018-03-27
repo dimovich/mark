@@ -4,7 +4,11 @@
             [mark.util  :as u]))
 
 
+;; for play count
 (def state (atom {}))
+
+;; disable vertical centering on mobile
+(def mobile-breakpoint 768)
 
 
 ;; take a vinyl wrapper and toggle play/pause
@@ -154,7 +158,9 @@
 ;; check if slider viewports have loaded and add extra functionality
 ;;
 (defn checker [t]
-  (let [views (get-viewports)]
+  (let [views (get-viewports)
+        mobile? (u/match-media mobile-breakpoint)]
+    
     (if (empty? views)
       ;; retry
       (when (pos? t)
@@ -166,7 +172,8 @@
         (u/load-mp3 state "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
 
         ;; keep track how we scrolled (mousewheel or other ways)
-        (u/init-scroll {:lastscroll #(swap! state assoc :lastscroll %)})
+        (when-not mobile?
+          (u/init-scroll {:lastscroll #(swap! state assoc :lastscroll %)}))
 
         ;; extract languages from page
         (u/init-languages state)
@@ -177,14 +184,15 @@
         ;; process gallery containers
         (doseq [gallery (get-galleries)]
           ;; keep track when gallery is almost in view and center it
-          (u/keep-centered state gallery "20%")
+          (when-not mobile?
+            (u/keep-centered state gallery "20%"))
           ;; take bg-* class name and pass it down to vinyl wrappers
           (pass-on-bg! gallery)
           ;; modify nav menu
           (add-nav-controls-listen! gallery))
 
         ;; trigger some delayed page resizes so the gallery redraws
-        ;; and make gallery visible
+        ;; and after that make gallery visible
         (let [ender #(doseq [el (get-galleries)]
                        (d/add-class! el :visible))]
           (u/trigger-resize 2 200 ender))

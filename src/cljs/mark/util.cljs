@@ -180,3 +180,8 @@
 
 
 
+(defn match-media [breakpoint]
+  (as-> breakpoint $
+    (str "(max-width: " $ "px)")
+    (.matchMedia js/window $)
+    (aget $ "matches")))
