@@ -225,3 +225,10 @@
          :size [x y])))
 
    )
+
+
+
+;;	<?php if (is_single('1207')): ?>
+;;      		<script type="text/javascript" src="http://www.markforge.com/wp-includes/js/spind1.0.6.js"></script>
+;;		<script>mark.core.main();</script>
+;;	<?php endif; ?>

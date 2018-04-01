@@ -1,8 +1,8 @@
 (set-env!
  :source-paths #{"src/cljs"}
  :resource-paths #{"resources"}
- :dependencies '[[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.9.946"]
+ :dependencies '[[org.clojure/clojure "1.10.0-alpha4"]
+                 [org.clojure/clojurescript "1.10.238"]
 
                  [adzerk/boot-cljs-repl     "0.3.3"  :scope "test"]
                  [adzerk/boot-cljs          "2.1.4"  :scope "test"]
@@ -14,9 +14,9 @@
                  [org.clojure/tools.nrepl   "0.2.13"   :scope "test"]
                  [cider/cider-nrepl         "0.16.0"   :scope "test"]
 
-                 [cljsjs/waypoints "4.0.0-0"]
-                 [cljsjs/smooth-scroll "10.2.1-0"]
-                 [bardo "0.1.2-SNAPSHOT"]
+                 #_[cljsjs/waypoints "4.0.0-0"]
+                 #_[cljsjs/smooth-scroll "10.2.1-0"]
+                 #_[bardo "0.1.2-SNAPSHOT"]
 
                  [prismatic/dommy "1.1.0"]
                  [com.taoensso/timbre "4.10.0"]])

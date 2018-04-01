@@ -70,8 +70,8 @@
 
 (defn get-nav-controls [base]
   (when base
-    (-> (d/sel1 base :.flex-control-nav)
-        (d/sel :li))))
+    (mapcat #(-> (d/sel1 base %) (d/sel :li))
+            [:.flex-control-nav :.flex-direction-nav])))
 
 
 
@@ -169,11 +169,11 @@
       ;; check first if we didn't already add the wrappers
       (when-not (spind?)
         ;; load the vinyl noise mp3
-        (u/load-mp3 state "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
+        #_(u/load-mp3 state "http://www.markforge.com/wp-content/uploads/vinyl.mp3")
 
         ;; keep track how we scrolled (mousewheel or other ways)
-        (when-not mobile?
-          (u/init-scroll {:lastscroll #(swap! state assoc :lastscroll %)}))
+        #_(when-not mobile?
+            (u/init-scroll {:lastscroll #(swap! state assoc :lastscroll %)}))
 
         ;; extract languages from page
         (u/init-languages state)
@@ -184,8 +184,8 @@
         ;; process gallery containers
         (doseq [gallery (get-galleries)]
           ;; keep track when gallery is almost in view and center it
-          (when-not mobile?
-            (u/keep-centered state gallery "20%"))
+          #_(when-not mobile?
+              (u/keep-centered state gallery "20%"))
           ;; take bg-* class name and pass it down to vinyl wrappers
           (pass-on-bg! gallery)
           ;; modify nav menu
